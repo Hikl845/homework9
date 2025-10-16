@@ -1,51 +1,51 @@
 package org.example;
 
-public class MyStack {
-private static class Node{
-    Object value;
-    Node next;
+public class MyStack<T> {
 
-    Node(Object value){
-        this.value = value;
+    private static class Node<T> {
+        T value;
+        Node<T> next;
+
+        Node(T value) {
+            this.value = value;
+        }
     }
-}
 
-private Node top = null;
-private int size = 0;
+    private Node<T> top = null;
+    private int size = 0;
 
-public void push(Object value){
-    Node newNode = new Node(value);
-    newNode.next = (Node) value;
-    top = newNode;
-    size++;
-}
+    public void push(T value) {
+        Node<T> newNode = new Node<>(value);
+        newNode.next = top;
+        top = newNode;
+        size++;
+    }
 
-public void clear(){
-    top = null;
-    size = 0;
-}
+    public T peek() {
+        return (top != null) ? top.value : null;
+    }
 
-public int size(){
-    return size;
-}
-
-public Object peek(){
-    if(top == null) return null;
-    return top.value;
-}
-
-    public Object pop() {
+    public T pop() {
         if (top == null) return null;
-        Object result = top.value;
+        T result = top.value;
         top = top.next;
         size--;
         return result;
     }
 
+    public void clear() {
+        top = null;
+        size = 0;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    // Нестандартна операція для стеку — remove за індексом
     public void remove(int index) {
         if (index < 0 || index >= size) {
-            System.out.println("Invalid index");
-            return;
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
         }
 
         if (index == 0) {
@@ -53,7 +53,7 @@ public Object peek(){
             return;
         }
 
-        Node current = top;
+        Node<T> current = top;
         for (int i = 0; i < index - 1; i++) {
             current = current.next;
         }
