@@ -1,53 +1,54 @@
 package org.example;
 
-public class MyArrayList {
-    private String[] massiveOfWords = new String[0];
+import java.util.Arrays;
 
-    public String[] add(Object value) {
-        String[] newValues = new String[massiveOfWords.length + 1];
+public class MyArrayList<T> {
 
-        for (int i = 0; i < massiveOfWords.length; i++) {
-            newValues[i] = massiveOfWords[i];
-        }
+    private static final int DEFAULT_CAPACITY = 10;
+    private Object[] elements;
+    private int size;
 
-        newValues[massiveOfWords.length] = String.valueOf(value);
-        massiveOfWords = newValues;
-        return massiveOfWords;
+    public MyArrayList() {
+        elements = new Object[DEFAULT_CAPACITY];
     }
 
-    public String[] remove(int index) {
-        if (index < 0 || index >= massiveOfWords.length) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
-        }
-
-        String[] newValues = new String[massiveOfWords.length - 1];
-        int newIndex = 0;
-
-        for (int i = 0; i < massiveOfWords.length; i++) {
-            if (i != index) {
-                newValues[newIndex++] = massiveOfWords[i];
-            }
-        }
-
-        massiveOfWords = newValues;
-        return massiveOfWords;
+    public void add(T value) {
+        ensureCapacity();
+        elements[size++] = value;
     }
 
-    public String[] clear() {
-        massiveOfWords = new String[0];
-        return massiveOfWords;
+    public T get(int index) {
+        checkIndex(index);
+        return (T) elements[index];
+    }
+
+    public void remove(int index) {
+        checkIndex(index);
+        for (int i = index; i < size - 1; i++) {
+            elements[i] = elements[i + 1];
+        }
+        elements[--size] = null; // avoid memory leak
+    }
+
+    public void clear() {
+        Arrays.fill(elements, 0, size, null);
+        size = 0;
     }
 
     public int size() {
-        return massiveOfWords.length;
+        return size;
     }
 
-    public String get(int index) {
-        if (index < 0 || index >= massiveOfWords.length) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+    private void ensureCapacity() {
+        if (size == elements.length) {
+            int newCapacity = elements.length + (elements.length >> 1); // grow by 1.5x
+            elements = Arrays.copyOf(elements, newCapacity);
         }
-
-        return massiveOfWords[index];
     }
 
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+    }
 }
