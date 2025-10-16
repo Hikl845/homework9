@@ -12,7 +12,7 @@ public class MyLinkedList {
 }
 private Node head;
 private Node tail;
-private int setSize = 0;
+private int size = 0;
 public void add(Object value){
     Node newNode = new Node(value);
     if(head == null){
@@ -23,7 +23,7 @@ public void add(Object value){
         tail.next = newNode;
         tail = newNode;
     }
-    setSize++;
+    size++;
 }
     private void checkIndex(int index) {
         if (index < 0 || index >= setSize) {
@@ -50,15 +50,15 @@ public void remove(int index){
         tail = toRemove.prev;
     }
 
-    setSize--;
+    size--;
 }
     public int size(){
-        return setSize;
+        return size;
     }
     public void clear(){
     head = null;
     tail = null;
-    setSize = 0;
+    size = 0;
     }
     private Node getNode(int index) {
         Node current;
