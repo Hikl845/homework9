@@ -1,20 +1,20 @@
 package org.example;
 
-public class MyQueue {
+public class MyQueue <T>{
 
-    private static class Node{
-    Object value;
-    Node next;
+    private static class Node <T>{
+    T value;
+    Node<T> next;
     Node(Object value){
         this.value = value;
     }
 }
 
-private Node head;
-private Node tail;
+private Node<T> head;
+private Node<T> tail;
 private int setSize = 0;
-public void add(Object value){
-    Node newNode = new Node(value);
+public void add(T value){
+    Node<T> newNode = new Node<>(value);
     if(tail == null){
         head=tail=newNode;
     }
@@ -32,15 +32,15 @@ public void clear(){
     tail = null;
     setSize = 0;
 }
-public Object peek(){
+public T peek(){
     if(head ==null){
         return null;
     }
     return head.value;
 }
-    public Object poll() {
+    public T poll() {
         if (head == null) return null;
-        Object result = head.value;
+        T result = head.value;
         head = head.next;
         if (head == null) {
             tail = null;
