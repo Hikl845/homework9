@@ -5,7 +5,7 @@ public class MyQueue <T>{
     private static class Node <T>{
     T value;
     Node<T> next;
-    Node(Object value){
+    Node(T value){
         this.value = value;
     }
 }
