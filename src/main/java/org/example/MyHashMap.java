@@ -1,52 +1,63 @@
 package org.example;
 
-import java.util.HashMap;
+public class MyHashMap<K, V> {
+    private static class Node<K, V> {
+        final K key;
+        V value;
+        Node<K, V> next;
 
-public class MyHashMap {
-private static class Node{
-    Object key;
-    Object value;
-    Node next;
-    Node(Object key, Object value){
-        this.value = value;
-        this.key = key;
+        Node(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
     }
-}
-    private final static int INITIAL_CAPACITY = 16;
-    private Node[] buckets;
+
+    private static final int INITIAL_CAPACITY = 16;
+    private Node<K, V>[] buckets;
     private int size;
 
-    public MyHashMap(){
-        buckets = new Node[INITIAL_CAPACITY];
+    private V nullKeyValue = null; // окреме поле для ключа null
+
+    @SuppressWarnings("unchecked")
+    public MyHashMap() {
+        buckets = (Node<K, V>[]) new Node[INITIAL_CAPACITY];
         size = 0;
     }
-    private int getIndex(Object key) {
+
+    private int getIndex(K key) {
         return Math.abs(key.hashCode()) % buckets.length;
     }
 
-    public void put(Object key, Object value) {
-        int index = getIndex(key);
-        Node current = buckets[index];
+    public void put(K key, V value) {
+        if (key == null) {
+            nullKeyValue = value;
+            return;
+        }
 
-        // Перевіряємо, чи вже існує ключ
+        int index = getIndex(key);
+        Node<K, V> current = buckets[index];
+
         while (current != null) {
             if (current.key.equals(key)) {
-                current.value = value; // оновлюємо значення
+                current.value = value;
                 return;
             }
             current = current.next;
         }
 
-        // Додаємо нову ноду на початок списку
-        Node newNode = new Node(key, value);
+        Node<K, V> newNode = new Node<>(key, value);
         newNode.next = buckets[index];
         buckets[index] = newNode;
         size++;
     }
 
-    public Object get(Object key) {
+    public V get(K key) {
+        if (key == null) {
+            return nullKeyValue;
+        }
+
         int index = getIndex(key);
-        Node current = buckets[index];
+        Node<K, V> current = buckets[index];
 
         while (current != null) {
             if (current.key.equals(key)) {
@@ -55,13 +66,21 @@ private static class Node{
             current = current.next;
         }
 
-        return null; // ключ не знайдено
+        return null;
     }
 
-    public boolean remove(Object key) {
+    public boolean remove(K key) {
+        if (key == null) {
+            if (nullKeyValue != null) {
+                nullKeyValue = null;
+                return true;
+            }
+            return false;
+        }
+
         int index = getIndex(key);
-        Node current = buckets[index];
-        Node prev = null;
+        Node<K, V> current = buckets[index];
+        Node<K, V> prev = null;
 
         while (current != null) {
             if (current.key.equals(key)) {
@@ -77,14 +96,18 @@ private static class Node{
             current = current.next;
         }
 
-        return false; // ключ не знайдено
+        return false;
     }
 
-    public void clear(){
-        buckets = new Node[INITIAL_CAPACITY];
+    public void clear() {
+        for (int i = 0; i < buckets.length; i++) {
+            buckets[i] = null;
+        }
+        nullKeyValue = null;
         size = 0;
     }
-    public int size(){
-        return size;
+
+    public int size() {
+        return size + (nullKeyValue != null ? 1 : 0);
     }
 }
