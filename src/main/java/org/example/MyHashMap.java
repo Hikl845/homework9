@@ -16,8 +16,6 @@ public class MyHashMap<K, V> {
     private Node<K, V>[] buckets;
     private int size;
 
-    private V nullKeyValue = null; // окреме поле для ключа null
-
     @SuppressWarnings("unchecked")
     public MyHashMap() {
         buckets = (Node<K, V>[]) new Node[INITIAL_CAPACITY];
@@ -25,20 +23,15 @@ public class MyHashMap<K, V> {
     }
 
     private int getIndex(K key) {
-        return Math.abs(key.hashCode()) % buckets.length;
+        return (key == null) ? 0 : Math.abs(key.hashCode()) % buckets.length;
     }
 
     public void put(K key, V value) {
-        if (key == null) {
-            nullKeyValue = value;
-            return;
-        }
-
         int index = getIndex(key);
         Node<K, V> current = buckets[index];
 
         while (current != null) {
-            if (current.key.equals(key)) {
+            if ((key == null && current.key == null) || (key != null && key.equals(current.key))) {
                 current.value = value;
                 return;
             }
@@ -52,15 +45,11 @@ public class MyHashMap<K, V> {
     }
 
     public V get(K key) {
-        if (key == null) {
-            return nullKeyValue;
-        }
-
         int index = getIndex(key);
         Node<K, V> current = buckets[index];
 
         while (current != null) {
-            if (current.key.equals(key)) {
+            if ((key == null && current.key == null) || (key != null && key.equals(current.key))) {
                 return current.value;
             }
             current = current.next;
@@ -70,20 +59,12 @@ public class MyHashMap<K, V> {
     }
 
     public boolean remove(K key) {
-        if (key == null) {
-            if (nullKeyValue != null) {
-                nullKeyValue = null;
-                return true;
-            }
-            return false;
-        }
-
         int index = getIndex(key);
         Node<K, V> current = buckets[index];
         Node<K, V> prev = null;
 
         while (current != null) {
-            if (current.key.equals(key)) {
+            if ((key == null && current.key == null) || (key != null && key.equals(current.key))) {
                 if (prev == null) {
                     buckets[index] = current.next;
                 } else {
@@ -103,11 +84,10 @@ public class MyHashMap<K, V> {
         for (int i = 0; i < buckets.length; i++) {
             buckets[i] = null;
         }
-        nullKeyValue = null;
         size = 0;
     }
 
     public int size() {
-        return size + (nullKeyValue != null ? 1 : 0);
+        return size;
     }
 }
